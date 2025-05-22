@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/layout.jsx", "src/app/api/auth/[...nextauth]/route.js", "src/app/page.jsx", "src/utils/generateMeetLink.js", "src/redux/meetingSlice.js", "src/redux/store.js", "src/components/ScheduleMeeting.jsx", "src/components/InstantMeeting.jsx"],
   "exclude": ["node_modules"]
 }
