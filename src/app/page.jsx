@@ -1,14 +1,30 @@
 'use client';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  const [hasError, setHasError] = useState(false);
 
-  if (session) {
-    router.push('/dashboard');
-    return null;
+  useEffect(() => {
+    try {
+      if (status === 'authenticated') {
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Auth redirect error:', error);
+      setHasError(true);
+    }
+  }, [session, status, router]);
+
+  if (hasError) {
+    return (
+      <div className="flex h-screen justify-center items-center bg-black text-red-500">
+        <p>⚠️ Something went wrong. Try clearing your cookies and refreshing the page.</p>
+      </div>
+    );
   }
 
   return (
