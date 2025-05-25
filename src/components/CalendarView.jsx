@@ -12,7 +12,7 @@ export default function CalendarView() {
   const scheduledMeetings = useSelector((state) => state.meeting.scheduledMeetings);
 
   const formattedSelected = format(selectedDate, 'yyyy-MM-dd');
-  const meetingsForDate = scheduledMeetings.filter(m => m.date === formattedSelected);
+  const meetingsForDate = scheduledMeetings.filter((m) => m.date === formattedSelected);
 
   return (
     <div className="p-4 mt-6 border rounded max-w-md mx-auto">
@@ -28,10 +28,21 @@ export default function CalendarView() {
       />
 
       <div className="mt-4">
-        <h3 className="font-semibold mb-2">Meetings on {formattedSelected}:</h3>
+        <h3 className="font-semibold mb-2">
+          Meetings on {formattedSelected}:
+        </h3>
         {meetingsForDate.length > 0 ? (
           meetingsForDate.map((m, idx) => (
-            <p key={idx}><a href={m.link} target="_blank" className="text-blue-600 underline">{m.link}</a></p>
+            <p key={idx}>
+              <a
+                href={m.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                {m.link}
+              </a>
+            </p>
           ))
         ) : (
           <p>No meetings scheduled.</p>

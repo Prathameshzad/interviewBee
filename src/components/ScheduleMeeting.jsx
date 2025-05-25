@@ -30,10 +30,21 @@ export default function ScheduleMeeting() {
       return;
     }
 
-    const formattedDate = format(new Date(`${date}T${time}`), 'yyyy-MM-dd');
-    dispatch(addScheduledMeeting({ date: formattedDate, link: generatedLink }));
-    setMessage(`✅ Meeting scheduled for ${formattedDate}`);
+    // Convert date & time to local Date object
+    const [year, month, day] = date.split('-').map(Number);
+    const [hours, minutes] = time.split(':').map(Number);
+    const localDateTime = new Date(year, month - 1, day, hours, minutes);
 
+    const now = new Date();
+    if (localDateTime < now) {
+      setMessage('⚠️ Cannot schedule a meeting in the past.');
+      return;
+    }
+
+    const formattedDate = format(localDateTime, 'yyyy-MM-dd');
+    dispatch(addScheduledMeeting({ date: formattedDate, link: generatedLink }));
+
+    setMessage(`✅ Meeting scheduled for ${formattedDate}`);
     setDate('');
     setTime('');
     setGeneratedLink(null);
@@ -41,7 +52,9 @@ export default function ScheduleMeeting() {
 
   return (
     <div className="bg-black text-yellow-400 p-6 rounded-xl shadow-lg max-w-xl mx-auto mt-6">
-      <h2 className="text-2xl font-bold mb-4 border-b border-yellow-500 pb-2">📅 Schedule a Meeting</h2>
+      <h2 className="text-2xl font-bold mb-4 border-b border-yellow-500 pb-2">
+        📅 Schedule a Meeting
+      </h2>
 
       <button
         className="bg-yellow-400 text-black font-semibold px-5 py-2 rounded-lg hover:bg-yellow-300 transition duration-300 mb-4"
@@ -52,7 +65,15 @@ export default function ScheduleMeeting() {
 
       {generatedLink && (
         <p className="mb-4 text-yellow-300 break-words">
-          Generated Link: <a href={generatedLink} target="_blank" className="underline text-yellow-500 hover:text-yellow-300">{generatedLink}</a>
+          Generated Link:{' '}
+          <a
+            href={generatedLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-yellow-500 hover:text-yellow-300"
+          >
+            {generatedLink}
+          </a>
         </p>
       )}
 
@@ -82,7 +103,9 @@ export default function ScheduleMeeting() {
         </button>
       </div>
 
-      {message && <p className="text-sm text-yellow-300 italic mt-2">{message}</p>}
+      {message && (
+        <p className="text-sm text-yellow-300 italic mt-2">{message}</p>
+      )}
     </div>
   );
 }
