@@ -1,23 +1,35 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addScheduledMeeting } from '../redux/meetingSlice';
-import generateMeetLink from '../utils/generateMeetLink';
+import { generateMeetLink } from '../utils/generateMeetLink';
 import { format } from 'date-fns';
 
 export default function ScheduleMeeting() {
   const dispatch = useDispatch();
+  const { data: session } = useSession();
 
   const [generatedLink, setGeneratedLink] = useState(null);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleGenerateLink = () => {
-    const link = generateMeetLink();
-    setGeneratedLink(link);
-    setMessage('✅ Link generated! Now select date & time to schedule.');
+  const handleGenerateLink = async () => {
+    if (!session?.accessToken) {
+      setMessage('⚠️ You must be logged in with Google to generate a Meet link.');
+      return;
+    }
+
+    try {
+      const link = await generateMeetLink(session.accessToken);
+      setGeneratedLink(link);
+      setMessage('✅ Link generated! Now select date & time to schedule.');
+    } catch (error) {
+      console.error('Error generating Meet link:', error);
+      setMessage('❌ Failed to generate Google Meet link.');
+    }
   };
 
   const handleSchedule = () => {
@@ -30,7 +42,6 @@ export default function ScheduleMeeting() {
       return;
     }
 
-    // Convert date & time to local Date object
     const [year, month, day] = date.split('-').map(Number);
     const [hours, minutes] = time.split(':').map(Number);
     const localDateTime = new Date(year, month - 1, day, hours, minutes);
